@@ -14,10 +14,6 @@ height = float()
 global distance_b, distance_o
 t = 0
 l = 0
-s = 0
-h = 0
-lineCY = 160
-lineF = 20
 hi_static = 0.35   #1.14  / 2.19:heighest alt  / 1.41:1stGate  / 0.35:LowestGetThrough
 hi_tolerance = 0.02
 
@@ -86,9 +82,7 @@ class image_converter(object):
 
     # def move_trick(self):
     def callback(self,down,front):
-        global height, sonar_f, s, h, hi_static, hi_tolerance, moving
-        rate = rospy.Rate(10)
-        r = rospy.Rate(1)
+        global height, sonar_f, hi_static, hi_tolerance, moving
         self._pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
         self._move_msg = Twist()
 

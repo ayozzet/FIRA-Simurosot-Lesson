@@ -12,6 +12,7 @@ import time
 sonar_f = float()
 height = float()
 t = 0
+l = 0
 
 class image_converter(object):
     def __init__(self):
@@ -49,9 +50,7 @@ class image_converter(object):
         self._move_msg.linear.z = 0.0
         self._move_msg.angular.z = 0.0
         self.publish_once_in_cmd_vel(self._move_msg)
-        # time.sleep(0.3)
-
-    
+        # time.sleep(0.3)    
 
     def take_off(self):
         global t
@@ -81,9 +80,6 @@ class image_converter(object):
 
     # def move_trick(self):
     def callback(self,down,front):
-        global height, sonar_f, s, h, hi_static
-        rate = rospy.Rate(10)
-        r = rospy.Rate(1)
         self._pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
         self._move_msg = Twist()
 
