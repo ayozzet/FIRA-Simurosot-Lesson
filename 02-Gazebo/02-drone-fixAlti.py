@@ -9,9 +9,7 @@ from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import time
 
-sonar_f = float()
 height = float()
-global distance_b, distance_o
 t = 0
 l = 0
 hi_static = 0.35   #1.14  / 2.19:heighest alt  / 1.41:1stGate  / 0.35:LowestGetThrough
@@ -24,11 +22,6 @@ class image_converter(object):
         self.down = message_filters.Subscriber('/drone/down_camera/image_raw', Image)
         self.ctrl_c = False
         self.rate = rospy.Rate(10)
-
-    def callback1(self, data1):
-        #rospy.loginfo(data.range)
-        global sonar_f
-        sonar_f = data1.range
 
     def callback2(self, data2):
         #rospy.loginfo(data.range)
@@ -81,16 +74,14 @@ class image_converter(object):
             l += 1
 
     # def move_trick(self):
-    def callback(self,down,front):
+    def callback(self,front):
         global height, sonar_f, hi_static, hi_tolerance, moving
         self._pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
         self._move_msg = Twist()
 
-        cv_image_down = self.bridge.imgmsg_to_cv2(down, "bgr8")
         cv_image_front = self.bridge.imgmsg_to_cv2(front, "bgr8")
 
         hi_current = float("{:.2f}".format(height))
-        son_current = float("{:.2f}".format(sonar_f))
 
         while not s == 1:
             self.take_off()
@@ -109,10 +100,9 @@ class image_converter(object):
         if (hi_current > hi_static-hi_tolerance) and (hi_current < hi_static+hi_tolerance):
             moving = "STATIC"
         
-        print("HEIGHT:" + str(hi_current) + "\tSONAR:"+str(son_current)+"\tZ-ACTION:"+ moving)
+        print("HEIGHT:" + str(hi_current) +"\tZ-ACTION:"+ moving)
         
         cv2.imshow("Front_Cam", cv_image_front)
-        cv2.imshow("Down_Cam", cv_image_down)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             rospy.signal_shutdown('Quit')
@@ -121,7 +111,6 @@ class image_converter(object):
 def main():
     rospy.init_node('move_trick')
     move_trick = image_converter()
-    sub1 = rospy.Subscriber("/drone/sonar", Range, move_trick.callback1)
     sub2 = rospy.Subscriber("/drone/gt_pose", Pose, move_trick.callback2)
     try:
         ts = message_filters.ApproximateTimeSynchronizer([move_trick.down,move_trick.front],10,0.1)
