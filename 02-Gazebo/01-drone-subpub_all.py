@@ -4,7 +4,7 @@ import message_filters
 import rospy
 from std_msgs.msg import Empty
 from sensor_msgs.msg import Image, Range
-from geometry_msgs.msg import Pose, Twist
+from geometry_msgs.msg import Twist
 from cv_bridge import CvBridge
 import cv2
 import time
@@ -21,11 +21,11 @@ class image_converter(object):
         self.ctrl_c = False
         self.rate = rospy.Rate(10)
 
-    def callback2(self, data2):
+    def callback1(self, data1):
         #rospy.loginfo(data.range)
-        global height
-        height = data2.position.z
-
+        global sonar_f
+        sonar_f = data1.range
+   
     def publish_once_in_cmd_vel(self, cmd):
         while not self.ctrl_c:
             connections = self._pub_cmd_vel.get_num_connections()
@@ -79,9 +79,8 @@ class image_converter(object):
 
         cv_image_front = self.bridge.imgmsg_to_cv2(front, "bgr8")
 
-        hi_current = float("{:.2f}".format(height))
-        print("HEIGHT:" + str(hi_current))
-
+        son_current = float("{:.2f}".format(son_current))
+        print("SONAR:" + str(son_current))
         
         cv2.imshow("Front_Cam", cv_image_front)
 
